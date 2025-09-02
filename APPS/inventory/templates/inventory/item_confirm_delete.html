@@ -1,0 +1,20 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Delete Item | Inventory Management System{% endblock %}
+
+{% block content %}
+<h1>Delete Item</h1>
+
+<div class="confirmation-message">
+    <p>Are you sure you want to delete "{{ object.name }}"?</p>
+    <p>This will permanently remove this item from your inventory and all related sales records.</p>
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <div class="form-actions">
+        <button type="submit" class="delete-button">Yes, Delete</button>
+        <a href="{% url 'item_list' %}">Cancel</a>
+    </div>
+</form>
+{% endblock %}

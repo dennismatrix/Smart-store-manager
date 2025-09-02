@@ -1,0 +1,151 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Sell Item | Inventory Management System{% endblock %}
+
+{% block content %}
+<style>
+    .sell-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 500px;
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin: auto;
+        text-align: center;
+    }
+    
+    .sell-card h1 {
+        color: #333;
+        font-size: 24px;
+    }
+    
+    .sell-card p {
+        color: #444;
+        font-size: 16px;
+        margin: 10px 0;
+    }
+    
+    .form-group {
+        width: 100%;
+        text-align: left;
+        margin: 10px 0;
+    }
+    
+    .form-group label {
+        font-weight: bold;
+        color: #222;
+    }
+    
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    
+    .sale-summary {
+        background: #f8f8f8;
+        padding: 10px;
+        border-radius: 5px;
+        width: 100%;
+        margin-top: 15px;
+    }
+    
+    .form-actions {
+        margin-top: 15px;
+    }
+    
+    .form-actions button, .form-actions a {
+        display: inline-block;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        color: #fff;
+    }
+    
+    .form-actions button {
+        background: #28a745;
+    }
+    
+    .form-actions a {
+        background: #dc3545;
+    }
+</style>
+
+<div class="sell-card">
+    <h1>Sell: {{ item.name }}</h1>
+    <p><strong>Current Price:</strong> kah {{ item.selling_price }}</p>
+    <p><strong>Available Quantity:</strong> {{ item.quantity }}</p>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.item.as_hidden }}
+        
+        <div class="form-group">
+            <label for="{{ form.quantity_sold.auto_id }}">Quantity to Sell:</label>
+            {{ form.quantity_sold }}
+            {% if form.quantity_sold.errors %}
+                <div class="errors">{{ form.quantity_sold.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="{{ form.selling_price.auto_id }}">Selling Price (kah):</label>
+            {{ form.selling_price }}
+            <small>Default is kah {{ item.selling_price }}</small>
+            {% if form.selling_price.errors %}
+                <div class="errors">{{ form.selling_price.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="sale-summary">
+            <h3>Sale Summary</h3>
+            <p>Total: kah <span id="total-price">0.00</span></p>
+            <p>Estimated Profit: ksh <span id="estimated-profit">0.00</span></p>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit">Complete Sale</button>
+            <a href="{% url 'dashboard' %}">Cancel</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const quantityInput = document.getElementById('{{ form.quantity_sold.auto_id }}');
+        const priceInput = document.getElementById('{{ form.selling_price.auto_id }}');
+        const totalPriceSpan = document.getElementById('total-price');
+        const estimatedProfitSpan = document.getElementById('estimated-profit');
+        const buyingPrice = parseFloat("{{ item.buying_price|default:0 }}") || 0;
+
+        function updateSummary() {
+            const quantity = parseFloat(quantityInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
+            
+            const totalPrice = (quantity * price).toFixed(2);
+            const estimatedProfit = (quantity * (price - buyingPrice)).toFixed(2);
+            
+            totalPriceSpan.textContent = totalPrice;
+            estimatedProfitSpan.textContent = estimatedProfit;
+        }
+
+        if (quantityInput && priceInput) {
+            quantityInput.addEventListener('input', updateSummary);
+            priceInput.addEventListener('input', updateSummary);
+        }
+
+        updateSummary();
+    });
+</script>
+{% endblock %}

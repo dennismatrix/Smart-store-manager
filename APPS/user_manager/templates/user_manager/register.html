@@ -1,0 +1,287 @@
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<style>
+  :root {
+    --primary-color: #6c63ff; /* Updated primary color */
+    --secondary-color: #564fcc; /* Updated secondary color */
+    --accent-color: #7b68ee; /* Updated accent color */
+    --background-color: #1e1e1e; /* Dark background */
+    --success-color: #4bb543; /* Success color */
+    --error-color: #ff4444; /* Error color */
+    --text-color: #e0e0e0; /* Light text for dark background */
+    --light-text: #a0a0a0; /* Lighter text */
+    --border-color: #444; /* Darker border color */
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); /* Darker shadow */
+    --transition-time: 0.3s;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+  }
+
+  .register-container {
+    max-width: 500px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #2c2c2c; /* Dark container background */
+    border-radius: 10px;
+    box-shadow: var(--box-shadow);
+    animation: fadeIn 0.5s ease-in-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  h2 {
+    color: var(--primary-color);
+    text-align: center;
+    margin-bottom: 30px;
+    animation: slideDown 0.5s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+    animation: fadeIn 0.5s ease-out;
+    animation-fill-mode: both;
+  }
+
+  .form-group:nth-child(1) { animation-delay: 0.1s; }
+  .form-group:nth-child(2) { animation-delay: 0.2s; }
+  .form-group:nth-child(3) { animation-delay: 0.3s; }
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-weight: 500;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px 12px;
+    background-color: #3a3a3a; /* Dark input background */
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 16px;
+    color: var(--text-color);
+    transition: all var(--transition-time);
+  }
+
+  input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 3px rgba(123, 104, 238, 0.2);
+  }
+
+  .password-field {
+    position: relative;
+  }
+
+  .password-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--light-text);
+    transition: color var(--transition-time);
+  }
+
+  .password-toggle:hover {
+    color: var(--primary-color);
+  }
+
+  .text-danger {
+    color: var(--error-color);
+    font-size: 14px;
+    margin-top: 5px;
+    animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
+  }
+
+  @keyframes shake {
+    10%, 90% { transform: translate3d(-1px, 0, 0); }
+    20%, 80% { transform: translate3d(2px, 0, 0); }
+    30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+    40%, 60% { transform: translate3d(3px, 0, 0); }
+  }
+
+  .submit-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 30px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-time);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .submit-btn:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(108, 99, 255, 0.3);
+  }
+
+  .submit-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 5px rgba(108, 99, 255, 0.3);
+  }
+
+  .submit-btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%);
+    transform-origin: 50% 50%;
+  }
+
+  .submit-btn:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+  }
+
+  @keyframes ripple {
+    0% {
+      transform: scale(0, 0);
+      opacity: 0.5;
+    }
+    20% {
+      transform: scale(25, 25);
+      opacity: 0.3;
+    }
+    100% {
+      opacity: 0;
+      transform: scale(40, 40);
+    }
+  }
+
+  .login-link {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--light-text);
+    animation: fadeIn 0.5s ease-out;
+    animation-delay: 0.5s;
+    animation-fill-mode: both;
+  }
+
+  .login-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 500;
+    transition: all var(--transition-time);
+  }
+
+  .login-link a:hover {
+    color: var(--secondary-color);
+    text-decoration: underline;
+  }
+</style>
+
+<div class="register-container">
+  <h2>Create Your Account</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-group">
+        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+        {% if field.html_name == 'password1' or field.html_name == 'password2' %}
+          <div class="password-field">
+            {{ field }}
+            <button type="button" class="password-toggle" onclick="togglePasswordVisibility('{{ field.id_for_label }}', this)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="eye-icon" viewBox="0 0 16 16">
+                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+              </svg>
+            </button>
+          </div>
+        {% else %}
+          {{ field }}
+        {% endif %}
+        {% if field.errors %}
+          {% for error in field.errors %}
+            <div class="text-danger">{{ error }}</div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="submit-btn">Register</button>
+  </form>
+  <div class="login-link">
+    <p>Already have an account? <a href="{% url 'user_manager:login' %}" class="login-link">Login here</a></p>
+  </div>
+</div>
+
+<script>
+  function togglePasswordVisibility(fieldId, button) {
+    const passwordField = document.getElementById(fieldId);
+    const type = passwordField.getAttribute('type');
+    
+    if (type === 'password') {
+      passwordField.setAttribute('type', 'text');
+      button.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="eye-icon" viewBox="0 0 16 16">
+          <path d="M13.359 11.238C15.06 9.72 16 8 16 8s-3-5.5-8-5.5a7.028 7.028 0 0 0-2.79.588l.77.771A5.944 5.944 0 0 1 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.134 13.134 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755-.165.165-.337.328-.517.486l.708.709z"/>
+          <path d="M11.297 9.176a3.5 3.5 0 0 0-4.474-4.474l.823.823a2.5 2.5 0 0 1 2.829 2.829l.822.822zm-2.943 1.299.822.822a3.5 3.5 0 0 1-4.474-4.474l.823.823a2.5 2.5 0 0 0 2.829 2.829z"/>
+          <path d="M3.35 5.47c-.18.16-.353.322-.518.487A13.134 13.134 0 0 0 1.172 8l.195.288c.335.48.83 1.12 1.465 1.755C4.121 11.332 5.881 12.5 8 12.5c.716 0 1.39-.133 2.02-.36l.77.772A7.029 7.029 0 0 1 8 13.5C3 13.5 0 8 0 8s.939-1.721 2.641-3.238l.708.709zm10.296 8.884-12-12 .708-.708 12 12-.708.708z"/>
+        </svg>
+      `;
+    } else {
+      passwordField.setAttribute('type', 'password');
+      button.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="eye-icon" viewBox="0 0 16 16">
+          <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+          <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0z"/>
+        </svg>
+      `;
+    }
+  }
+
+  // Animation for form fields
+  document.addEventListener('DOMContentLoaded', function() {
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+      setTimeout(() => {
+        group.style.opacity = '1';
+      }, 100 * (index + 1));
+    });
+  });
+</script>
+{% endblock %}

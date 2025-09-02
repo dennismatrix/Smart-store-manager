@@ -1,0 +1,255 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Inventory | Inventory Management System{% endblock %}
+
+{% block content %}
+<style>
+    /* General Styling */
+body {
+    background-color: #121212;
+    color: #e0e0e0;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+h1, h2, h3 {
+    color: #ffffff;
+}
+
+/* Dashboard Overview */
+.overview {
+    display: flex;
+    gap: 20px;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.stat-box {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 200px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+/* Messages Styling */
+.messages {
+    margin: 20px;
+    padding: 10px;
+    background-color: #1c1c1c;
+    border-radius: 5px;
+}
+
+.messages-list {
+    list-style: none;
+    padding: 0;
+}
+
+.message {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+.success { background-color: #2e7d32; color: white; }
+.warning { background-color: #ff9800; color: black; }
+.error { background-color: #d32f2f; color: white; }
+
+/* Low Stock Alerts */
+.alerts-section, .alerts-banner {
+    background: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 20px;
+}
+
+.alert-list, .alerts-banner ul {
+    list-style: none;
+    padding: 0;
+}
+
+.alert-list li, .alerts-banner li {
+    padding: 10px;
+    border-bottom: 1px solid #444;
+}
+
+.alert-item-name {
+    font-weight: bold;
+    color: #ffcc00;
+}
+
+.alert-quantity {
+    color: #ff4444;
+}
+
+/* Inventory Items Grid */
+.item-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px;
+}
+
+.item-card {
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    width: 250px;
+    text-align: center;
+}
+
+.item-actions a {
+    display: inline-block;
+    margin: 5px;
+    padding: 8px 12px;
+    background: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+}
+
+.item-actions a:hover {
+    background: #0056b3;
+}
+
+.low-stock {
+    color: #ff4444;
+    font-weight: bold;
+}
+.search-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #1e1e1e; /* Dark background */
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    margin-bottom: 20px;
+}
+
+.search-container form {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.search-container input,
+.search-container select {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #333;
+    border-radius: 5px;
+    background: #2a2a2a;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    transition: 0.3s ease;
+}
+
+.search-container input:focus,
+.search-container select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px #007bff;
+}
+
+.search-container button {
+    padding: 10px 15px;
+    border: none;
+    background: #007bff;
+    color: white;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.search-container button:hover {
+    background: #0056b3;
+}
+
+
+</style>
+<h1>Inventory</h1>
+
+<!-- Search Form -->
+<div class="search-container">
+    <form method="get" action="{% url 'item_list' %}">
+        {{ search_form.search_query }}
+        {{ search_form.category }}
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<!-- Low Stock Alerts -->
+<!-- {% if low_stock_items %}
+<div class="alerts-banner">
+    <h3>Low Stock Alerts</h3>
+    <ul>
+        {% for item in low_stock_items %}
+        <li>
+            <span>{{ item.name }}</span> - <span>{{ item.quantity }} left</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %} -->
+
+<!-- Item Grid -->
+<div class="item-grid">
+    {% for item in items %}
+    <div class="item-card" data-id="{{ item.id }}">
+        <h3>{{ item.name }}</h3>
+        <p>Category: {{ item.category.name }}</p>
+        <p>Price: ksh {{ item.selling_price }}</p>
+        <p class="quantity {% if item.is_low_stock %}low-stock{% endif %}">
+            Quantity: {{ item.quantity }}
+        </p>
+        <div class="item-actions">
+            <a href="{% url 'item_update' item.id %}">Edit</a>
+            <a href="{% url 'sell_item' item.id %}">Sell</a>
+            <a href="{% url 'item_delete' item.id %}">Delete</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="empty-message">
+        <p>No items found. <a href="{% url 'item_create' %}">Add items</a>.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Update stock status periodically
+        function checkStockLevels() {
+            const itemCards = document.querySelectorAll('.item-card');
+            
+            itemCards.forEach(card => {
+                const itemId = card.dataset.id;
+                const quantityElement = card.querySelector('.quantity');
+                
+                fetch(`/api/check-stock/?item_id=ksh{itemId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        quantityElement.textContent = `Quantity: ksh{data.quantity}`;
+                        
+                        if (data.is_low_stock) {
+                            quantityElement.classList.add('low-stock');
+                        } else {
+                            quantityElement.classList.remove('low-stock');
+                        }
+                    })
+                    .catch(error => console.error('Error checking stock:', error));
+            });
+        }
+        
+        // Check stock every 30 seconds
+        setInterval(checkStockLevels, 30000);
+    });
+</script>
+{% endblock %}

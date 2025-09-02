@@ -1,0 +1,249 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}
+    {% if form.instance.id %}Edit Item{% else %}Add New Item{% endif %} | Inventory Management System
+{% endblock %}
+
+{% block content %}
+<style>
+    /* Container styles */
+    .form-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 2rem;
+        background: #ffffff;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+    }
+
+    /* Header styles */
+    .page-title {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #3498db;
+    }
+
+    /* Form layout */
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .form-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Form group styles */
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    /* Label styles */
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #34495e;
+        font-weight: 500;
+        font-size: 0.95rem;
+    }
+
+    /* Input styles */
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #fff;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+    }
+
+    /* Helper text styles */
+    .helper-text {
+        display: block;
+        color: #666;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        font-style: italic;
+    }
+
+    /* Error styles */
+    .errors {
+        color: #e74c3c;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        padding: 0.5rem;
+        background-color: #fde8e8;
+        border-radius: 4px;
+        border-left: 3px solid #e74c3c;
+    }
+
+    /* Button styles */
+    .button {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        color: #fff;
+        background-color: #3498db;
+        border-radius: 4px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .button.small {
+        font-size: 0.75rem;
+        padding: 0.25rem 0.75rem;
+        margin-left: 0.5rem;
+        background-color: #2ecc71;
+    }
+
+    .button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Actions container */
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    .form-actions button,
+    .form-actions a {
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .form-actions button {
+        background-color: #3498db;
+        color: white;
+        border: none;
+        flex: 1;
+    }
+
+    .form-actions button:hover {
+        background-color: #2980b9;
+    }
+
+    .form-actions a {
+        background-color: #e2e8f0;
+        color: #2d3748;
+        text-align: center;
+        flex: 1;
+    }
+
+    .form-actions a:hover {
+        background-color: #cbd5e0;
+    }
+
+    /* Animation */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .form-container {
+        animation: fadeIn 0.5s ease-out;
+    }
+</style>
+
+<div class="form-container">
+    <h1 class="page-title">{% if form.instance.id %}Edit Item{% else %}Add New Item{% endif %}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="{{ form.name.id_for_label }}">Item Name:</label>
+                {{ form.name }}
+                {% if form.name.errors %}
+                    <div class="errors">{{ form.name.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.category.id_for_label }}">Category:</label>
+                <div style="display: flex; align-items: center;">
+                    {{ form.category }}
+                    <a href="{% url 'category_create' %}" class="button small">+ New</a>
+                </div>
+                {% if form.category.errors %}
+                    <div class="errors">{{ form.category.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.buying_price.id_for_label }}">Buying Price (Ksh):</label>
+                {{ form.buying_price }}
+                {% if form.buying_price.errors %}
+                    <div class="errors">{{ form.buying_price.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.selling_price.id_for_label }}">Selling Price (Ksh):</label>
+                {{ form.selling_price }}
+                {% if form.selling_price.errors %}
+                    <div class="errors">{{ form.selling_price.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.quantity.id_for_label }}">Quantity:</label>
+                {{ form.quantity }}
+                {% if form.quantity.errors %}
+                    <div class="errors">{{ form.quantity.errors }}</div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.low_stock_threshold.id_for_label }}">Low Stock Threshold:</label>
+                {{ form.low_stock_threshold }}
+                <span class="helper-text">You'll receive alerts when quantity falls below this number</span>
+                {% if form.low_stock_threshold.errors %}
+                    <div class="errors">{{ form.low_stock_threshold.errors }}</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit">{% if form.instance.id %}Update Item{% else %}Create Item{% endif %}</button>
+            <a href="{% url 'item_list' %}">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

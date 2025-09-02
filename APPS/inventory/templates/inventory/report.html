@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales & Profit Report</title>
+    <style>
+        /* Dark Theme Color Palette */
+        :root {
+            --primary-bg: #1a1a1a;
+            --secondary-bg: #252525;
+            --card-bg: #2d2d2d;
+            --primary-text: #e6e6e6;
+            --secondary-text: #b3b3b3;
+            --accent: #6165DD;
+            --accent-hover: #4a4ecb;
+            --success: #4CAF50;
+            --danger: #f44336;
+            --border-radius: 8px;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+        }
+
+        /* Navigation Styles */
+        nav {
+            background-color: var(--secondary-bg);
+            box-shadow: var(--shadow);
+            padding: 0.8rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav ul {
+            display: flex;
+            flex-wrap: wrap;
+            list-style: none;
+            align-items: center;
+        }
+
+        nav ul li {
+            margin-right: 1rem;
+        }
+
+        nav a {
+            color: var(--primary-text);
+            text-decoration: none;
+            padding: 0.5rem 0.8rem;
+            border-radius: var(--border-radius);
+            transition: background-color 0.3s, color 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .nav-home {
+            margin-right: 1rem;
+        }
+
+        .nav-logout {
+            margin-left: auto;
+            background-color: rgba(244, 67, 54, 0.1);
+            color: var(--danger);
+        }
+
+        .nav-logout:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Container Styles */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 15px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-text);
+            position: relative;
+            padding-bottom: 0.5rem;
+        }
+
+        h2:after {
+            content: '';
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 3px;
+            width: 100px;
+            background-color: var(--accent);
+        }
+
+        /* Cards and Grid Layout */
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -15px;
+        }
+
+        .col-md-4 {
+            width: 100%;
+            padding: 0 15px;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .col-md-4 {
+                width: 33.333333%;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h4 {
+            font-size: 1.2rem;
+            margin-bottom: 0.8rem;
+            color: var(--accent);
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        ul {
+            list-style-position: inside;
+            margin-bottom: 1.5rem;
+            padding-left: 0.5rem;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+            color: var(--secondary-text);
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            font-weight: 500;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            user-select: none;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            border-radius: var(--border-radius);
+            transition: all 0.15s ease-in-out;
+            cursor: pointer;
+            margin-top: auto;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--accent);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-hover);
+        }
+
+        /* Add some spacing */
+        .mb-4 {
+            margin-bottom: 1.5rem;
+        }
+
+        .shadow-sm {
+            box-shadow: var(--shadow);
+        }
+
+        /* For empty lists */
+        li:only-child {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a href="{% url 'item_list' %}">Inventory</a></li>
+            <li><a href="{% url 'item_create' %}">Add Item</a></li>
+            <li><a href="{% url 'category_create' %}">Add Category</a></li>
+            <li><a href="{% url 'report' %}" class="nav-home">Sales Analysis</a></li>
+            <li><a href="{% url 'user_manager:home' %}" class="nav-home">Main page</a></li>
+            <li><a href="{% url 'repair_tracker:repair_list' %}" class="nav-home">Phone repairs</a></li>
+
+
+
+
+            <li style="margin-left: auto;"><a href="{% url 'user_manager:logout' %}" class="nav-logout">Logout</a></li>
+        </ul>
+    </nav>
+
+    <div class="container">
+        <h2 class="mb-4">Sales & Profit Report</h2>
+        
+        <div class="row">
+            {% for timeframe, sales, profit in reports %}
+            <div class="col-md-4">
+                <div class="card shadow-sm mb-4">
+                    <h4>{{ timeframe }} Sales</h4>
+                    <p>Total Profit: ksh {{ profit }}</p>
+                    <ul>
+                        {% for sale in sales %}
+                        <li>{{ sale.quantity_sold }} of {{ sale.item.name }} - ksh {{ sale.profit }}</li>
+                        {% empty %}
+                        <li>No sales recorded</li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'download_report' timeframe|lower %}" class="btn btn-primary">Download as PDF</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

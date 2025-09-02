@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ timeframe|title }} Repair & Revenue Report</title>
+    <style>
+        /* Modern Dark Theme Color Palette */
+        :root {
+            --primary-bg: #121212;
+            --secondary-bg: #1e1e1e;
+            --card-bg: #252525;
+            --table-header-bg: #2c2c2c;
+            --table-row-even: #272727;
+            --table-row-odd: #2e2e2e;
+            --table-border: #3a3a3a;
+            --primary-text: #f5f5f5;
+            --secondary-text: #c8c8c8;
+            --muted-text: #8a8a8a;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --success: #22c55e;
+            --border-radius: 10px;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--primary-text);
+            line-height: 1.6;
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1100px;
+            background-color: var(--secondary-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        header {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-bottom: 1px solid var(--table-border);
+            position: relative;
+        }
+
+        .report-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary-text);
+            text-align: center;
+        }
+
+        .report-period {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--secondary-text);
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 220px;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--muted-text);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .content {
+            padding: 2rem;
+        }
+
+        .table-section {
+            margin-top: 1rem;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-text);
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(99, 102, 241, 0.15);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin-bottom: 2rem;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+        }
+
+        .data-table th {
+            background-color: var(--table-header-bg);
+            color: var(--primary-text);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .data-table td {
+            padding: 1rem;
+            color: var(--secondary-text);
+            border-bottom: 1px solid var(--table-border);
+        }
+
+        .data-table tbody tr:nth-child(even) {
+            background-color: var(--table-row-even);
+        }
+
+        .data-table tbody tr:nth-child(odd) {
+            background-color: var(--table-row-odd);
+        }
+
+        .data-table tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.15);
+        }
+
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .amount {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-weight: 500;
+        }
+
+        .empty-message {
+            text-align: center;
+            font-style: italic;
+            color: var(--muted-text);
+            padding: 2rem;
+        }
+
+        .summary-section {
+            margin-top: 2rem;
+            background-color: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0;
+            border-top: 1px solid var(--table-border);
+        }
+
+        .total-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-text);
+        }
+
+        .total-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+            font-family: 'SF Mono', 'Consolas', monospace;
+        }
+
+        footer {
+            padding: 1.5rem;
+            text-align: center;
+            color: var(--muted-text);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--table-border);
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background-color: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            header, .content, footer {
+                background-color: white;
+                color: black;
+            }
+
+            .data-table th {
+                background-color: #f5f5f5;
+                color: #333;
+                border-bottom: 2px solid #6366f1;
+            }
+
+            .data-table td {
+                color: #333;
+                border-bottom: 1px solid #ddd;
+            }
+
+            .data-table tbody tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            .data-table tbody tr:nth-child(odd) {
+                background-color: white;
+            }
+
+            .total-value {
+                color: #6366f1;
+            }
+        }
+
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+            }
+
+            header {
+                padding: 1.5rem 1rem;
+            }
+
+            .content {
+                padding: 1.5rem 1rem;
+            }
+
+            .data-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .stat-card {
+                min-width: unset;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="report-title">{{ timeframe|title }} Repair & Revenue Report</h1>
+            <p class="report-period">{% now "F j, Y" %}</p>
+            
+            <div class="stats-container">
+                <div class="stat-card">
+                    <span class="stat-label" ><b>Total Revenue</b></span>
+                    <span class="stat-value">Ksh {{ total_revenue }}</span>
+                </div>
+            </div>
+        </header>
+
+        <div class="content">
+            <div class="table-section">
+                <h2 class="section-title">Repair Records</h2>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Customer</th>
+                            <th>Device</th>
+                            <th>Amount</th>
+                            <th>Collection Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for repair in repairs %}
+                        <tr>
+                            <td>{{ repair.owner_name }}</td>
+                            <td>{{ repair.phone_name }}</td>
+                            <td class="amount">Ksh {{ repair.charges }}</td>
+                            <td>{{ repair.collected_at }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="empty-message">No repair records found for this period</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="summary-section">
+                <div class="total-row">
+                    <span class="total-label">Total Revenue</span>
+                    <span class="total-value">Ksh {{ total_revenue }}</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>© {% now "Y" %} Phone Repair Shop. All rights reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>

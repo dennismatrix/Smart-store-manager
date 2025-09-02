@@ -1,0 +1,209 @@
+{% extends 'inventory/base.html' %}
+
+{% block title %}Dashboard | Inventory Management System{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #3b82f6;      /* Vibrant Blue */
+        --secondary-color: #10b981;    /* Emerald Green */
+        --accent-color: #6366f1;       /* Indigo */
+        --background-dark: #1a1a1a;    /* Dark Background */
+        --text-color: #f3f4f6;         /* Light Text */
+        --navbar-bg: #2d2d2d;          /* Navbar Background */
+        --card-bg: #2d2d2d;            /* Card Background */
+        --card-hover-bg: #3b3b3b;     /* Card Hover Background */
+        --alert-bg: #44475a;           /* Alert Background */
+    }
+
+    body {
+        background-color: var(--background-dark);
+        color: var(--text-color);
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1, h2, h3 {
+        color: var(--text-color);
+    }
+
+    .overview {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        width: 200px;
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        background-color: var(--card-hover-bg);
+    }
+
+    .alerts-section, .recent-sales {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        margin-bottom: 20px;
+    }
+
+    .alert-cards, .sales-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .alert-card, .sale-card {
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease, background-color 0.3s ease;
+    }
+
+    .alert-card:hover, .sale-card:hover {
+        transform: translateY(-5px);
+        background-color: var(--card-hover-bg);
+    }
+
+    .alert-card h4 {
+        color: #ff5555;
+        margin-bottom: 10px;
+    }
+
+    .alert-card p {
+        margin: 5px 0;
+    }
+
+    .alert-card .quantity {
+        color: #f1fa8c;
+        font-weight: bold;
+    }
+
+    .sale-card h4 {
+        color: var(--primary-color);
+        margin-bottom: 10px;
+    }
+
+    .sale-card p {
+        margin: 5px 0;
+    }
+
+    .sale-card .profit {
+        color: var(--secondary-color);
+        font-weight: bold;
+    }
+
+    .messages {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .messages-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .message {
+        padding: 10px 15px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
+    .message.success {
+        background-color: #50fa7b;
+        color: #1e1e2e;
+    }
+
+    .message.error {
+        background-color: #ff5555;
+        color: white;
+    }
+
+    .message.warning {
+        background-color: #f1fa8c;
+        color: #1e1e2e;
+    }
+
+    a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    a:hover {
+        color: var(--accent-color);
+    }
+</style>
+
+<h1>Dashboard</h1>
+
+<div class="overview">
+    <div class="stat-box">
+        <h3>Total Items</h3>
+        <p>{{ total_items|default:"0" }}</p>
+    </div>
+    <div class="stat-box">
+        <h3>Total Categories</h3>
+        <p>{{ total_categories|default:"0" }}</p>
+    </div>
+</div>
+
+<div class="alerts-section">
+    <h2>Low Stock Alerts</h2>
+    {% if low_stock_items %}
+        <div class="alert-cards">
+            {% for item in low_stock_items %}
+                <div class="alert-card">
+                    <h4>{{ item.name }}</h4>
+                    <p><strong>Quantity Left:</strong> <span class="quantity">{{ item.quantity }}</span></p>
+                    {% if item.id %}
+                        <a href="{% url 'item_update' item.id %}">Update Stock</a>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No low stock alerts.</p>
+    {% endif %}
+</div>
+<div class="stat-box">
+    <h3>Total Worth</h3>
+    <p>Ksh {{ total_worth|default:"0.00" }}</p>
+
+</div>
+
+<div class="recent-sales">
+    <h2>Recent Sales</h2>
+    {% if recent_sales %}
+        <div class="sales-cards">
+            {% for sale in recent_sales %}
+                <div class="sale-card">
+                    <h4>{{ sale.item.name }}</h4>
+                    <p><strong>Quantity Sold:</strong> {{ sale.quantity_sold }}</p>
+                    <p><strong>Price:</strong> Ksh {{ sale.selling_price|default:"0.00" }}</p>
+                    <p class="profit"><strong>Profit:</strong> ksh {{ sale.profit|default:"0.00" }}</p>
+                    <p><strong>Date:</strong> {{ sale.sold_at|default:"-"|date:"M d, Y H:i" }}</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No recent sales.</p>
+    {% endif %}
+</div>
+{% endblock %}
